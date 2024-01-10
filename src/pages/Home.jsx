@@ -1,58 +1,56 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { searchForShows, searchForPeople } from './../api/tvmaze';
 import SearchForm from '../components/SearchForm';
 import ShowGrid from '../components/shows/ShowGrid';
 import ActorGrid from '../components/actors/ActorGrid';
 
 const Home = () => {
-  const [apiData, setApiData] = useState(null);
-  const [apiDataError, setApiDataError] = useState(null);
+  const [filter, setFilter] = useState(null);
+
+  const { data: apiData, error: apiDataError } = useQuery({
+    queryKey: ['show', filter],
+    queryFn: () =>
+      filter.searchOption === 'shows'
+        ? searchForShows(filter.q)
+        : searchForPeople(filter.q),
+    // ⬇️ disabled as long as the filter is empty
+    enabled: !!filter,
+    refetchOnWindowFocus: false,
+  });
 
   const onSearch = async ({ q, searchOption }) => {
-    try {
-      setApiDataError(null);
+    setFilter({ q, searchOption });
 
-      let result;
-
-      if (searchOption === 'shows') {
-        result = await searchForShows(q);
-        setApiData(result);
-      } else {
-        result = await searchForPeople(q);
-        setApiData(result);
+    const renderApiData = () => {
+      if (apiDataError) {
+        return <div>Error occured : {apiDataError.message}</div>;
       }
-    } catch (error) {
-      setApiDataError(error);
-    }
+
+      if (apiData?.length === 0) {
+        return <div>No Results</div>;
+      }
+
+      if (apiData) {
+        return apiData[0].show ? (
+          <ShowGrid shows={apiData} />
+        ) : (
+          <ActorGrid actors={apiData} />
+        );
+      }
+
+      return null;
+    };
+
+    return (
+      <div>
+        <SearchForm onSearch={onSearch} />
+
+        <div>{renderApiData()}</div>
+      </div>
+    );
   };
-
-  const renderApiData = () => {
-    if (apiDataError) {
-      return <div>Error occured : {apiDataError.message}</div>;
-    }
-
-    if (apiData?.length === 0) {
-      return <div>No Results</div>;
-    }
-
-    if (apiData) {
-      return apiData[0].show ? (
-        <ShowGrid shows={apiData} />
-      ) : (
-        <ActorGrid actors={apiData} />
-      );
-    }
-
-    return null;
-  };
-
-  return (
-    <div>
-      <SearchForm onSearch={onSearch} />
-
-      <div>{renderApiData()}</div>
-    </div>
-  );
 };
 
 export default Home;
