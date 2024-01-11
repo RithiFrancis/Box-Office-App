@@ -15,7 +15,7 @@ const Seasons = ({ seasons }) => {
             <p>Episodes : {season.episodeOrder}</p>
 
             <div>
-              Aired : {season.premiereDate} - {season.endDate}
+              Aired : {season.premiereDate} to {season.endDate}
             </div>
           </div>
         ))}
