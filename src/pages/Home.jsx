@@ -10,12 +10,11 @@ const Home = () => {
   const [filter, setFilter] = useState(null);
 
   const { data: apiData, error: apiDataError } = useQuery({
-    queryKey: ['show', filter],
+    queryKey: ['search', filter],
     queryFn: () =>
-      filter.searchOption === 'shows'
+      filter?.searchOption === 'shows'
         ? searchForShows(filter.q)
         : searchForPeople(filter.q),
-    // ⬇️ disabled as long as the filter is empty
     enabled: !!filter,
     refetchOnWindowFocus: false,
   });
