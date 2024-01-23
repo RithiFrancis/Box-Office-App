@@ -6,6 +6,7 @@ import SearchForm from '../components/SearchForm';
 import ShowGrid from '../components/shows/ShowGrid';
 import ActorGrid from '../components/actors/ActorGrid';
 import styled from 'styled-components';
+import { TextCenter } from '../components/common/TextCenter';
 
 const Button = styled.button``
 
@@ -28,11 +29,11 @@ const Home = () => {
 
   const renderApiData = () => {
     if (apiDataError) {
-      return <div>Error occured : {apiDataError.message}</div>;
+      return <TextCenter>Error occured : {apiDataError.message}</TextCenter>;
     }
 
     if (apiData?.length === 0) {
-      return <div>No Results</div>;
+      return <TextCenter>No Results</TextCenter>;
     }
 
     if (apiData) {
